@@ -138,10 +138,6 @@ Open the local address displayed in your terminal, typically:
 - Integrating frontend and backend components
 - Deploying a Python application to the cloud
 
-## 👩‍💻 Contributors
-
-This project was developed as part of a group case study. Visit the repository to view its contributors and their contributions.
-
 ---
 
 ⭐ If you find this project interesting, consider starring the repository!
