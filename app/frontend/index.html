@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CryptoScope - Cryptocurrency Market Behaviour Analysis</title>
+  
+  <!-- Inter & JetBrains Mono Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  
+  <!-- Chart.js for High-Performance Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- Academic Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ====================================================================
+       MOBILE HEADER
+       ==================================================================== -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <div class="logo-icon">CS</div>
+      <h2>CryptoScope</h2>
+    </div>
+    <button class="btn-menu-toggle" id="btn-mobile-menu" aria-label="Toggle Navigation">
+      ☰
+    </button>
+  </header>
+
+  <!-- ====================================================================
+       SLIM DARK NAVY SIDEBAR (DESKTOP)
+       ==================================================================== -->
+  <aside class="sidebar" id="sidebar">
+    <!-- Project Logo -->
+    <div class="sidebar-logo">
+      <div class="logo-icon">CS</div>
+      <div class="logo-text">
+        <h2>CryptoScope</h2>
+        <span>Data Science Suite</span>
+      </div>
+    </div>
+
+    <!-- Exactly 4 Navigation Options -->
+    <nav class="sidebar-nav" role="tablist">
+      <button class="nav-item active" data-tab="tab-overview" id="nav-btn-overview">
+        <span class="nav-icon">📊</span>
+        <span>Overview</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-explore" id="nav-btn-explore">
+        <span class="nav-icon">🔍</span>
+        <span>Explore Data</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-analysis" id="nav-btn-analysis">
+        <span class="nav-icon">📈</span>
+        <span>Analysis</span>
+      </button>
+
+      <button class="nav-item" data-tab="tab-tableau" id="nav-btn-tableau">
+        <span class="nav-icon">⚡</span>
+        <span>Tableau Dashboard</span>
+      </button>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer">
+      <div class="api-status-badge">
+        <span class="status-indicator" id="sidebar-status-dot"></span>
+        <span id="sidebar-status-text">Backend API Connected</span>
+      </div>
+      <div style="font-size: 0.72rem; color: #64748b; padding-left: 0.4rem;">
+        23CSE351 • Case Study
+      </div>
+    </div>
+  </aside>
+
+  <!-- ====================================================================
+       MAIN VIEWPORT WRAPPER
+       ==================================================================== -->
+  <div class="main-wrapper">
+    <main class="content-area">
+
+      <!-- ================================================================
+           TAB 1: OVERVIEW
+           ================================================================ -->
+      <section id="tab-overview" class="tab-section active">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">Market Overview</h1>
+          <p class="page-subtitle">
+            Foundations of Data Science (23CSE351) • Quantitative case study analyzing <strong>109,130 timestamped market snapshots</strong> across <strong>71 cryptocurrencies</strong>.
+          </p>
+        </div>
+
+        <!-- 4 Compact KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-title">Cryptocurrencies Tracked</div>
+            <div class="kpi-value" id="kpi-crypto-count">
+              <span class="spinner"></span>
+            </div>
+            <div class="kpi-note" id="kpi-crypto-note">17 Stablecoins, 54 Volatile Coins</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Dataset Records</div>
+            <div class="kpi-value" id="kpi-record-count">
+              <span class="spinner"></span>
+            </div>
+            <div class="kpi-note" id="kpi-record-note">6,150 Daily Panel Records (183 Days)</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Average Daily Market Volume</div>
+            <div class="kpi-value" id="kpi-volume">
+              <span class="spinner"></span>
+            </div>
+            <div class="kpi-note">Tracked across top 50 assets ($170.8B)</div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-title">Average Daily Price Change</div>
+            <div class="kpi-value" id="kpi-chg">
+              <span class="spinner"></span>
+            </div>
+            <div class="kpi-note" id="kpi-chg-note">Mean 24h return (±5.65% SD)</div>
+          </div>
+        </div>
+
+        <!-- Historical Trend Chart Card -->
+        <div class="card">
+          <div class="card-header-clean">
+            <div>
+              <div class="card-title">Historical Price & Trading Volume Trajectory</div>
+              <div class="card-desc">Daily end-of-day price and volume over the 183-day observation period</div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+              <label for="overview-asset-picker" style="font-size: 0.82rem; font-weight: 600; color: var(--text-secondary);">Select Asset:</label>
+              <select id="overview-asset-picker" class="form-select" onchange="onOverviewAssetChange(this.value)">
+                <option value="Bitcoin" selected>Bitcoin (BTC)</option>
+                <option value="Ethereum">Ethereum (ETH)</option>
+                <option value="Solana">Solana (SOL)</option>
+                <option value="Tether">Tether (USDT)</option>
+                <option value="XRP">XRP (XRP)</option>
+                <option value="Cardano">Cardano (ADA)</option>
+                <option value="Avalanche">Avalanche (AVAX)</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="height: 380px; position: relative;">
+            <canvas id="overviewTrendChart"></canvas>
+          </div>
+
+          <div class="finding-card" id="overview-chart-takeaway" style="margin-top: 1.25rem;">
+            <strong>Key Observation (Bitcoin):</strong> Bitcoin started near $88,000 in late January, peaked at $90,117 in March, and suffered a -35.3% drawdown down to $58,260 in July/August. This illustrates that even the largest store-of-value cryptocurrency undergoes dramatic market drawdowns.
+          </div>
+        </div>
+
+        <!-- Small Section for Key Findings & Tableau CTA -->
+        <div class="card">
+          <div class="card-header-clean">
+            <div>
+              <div class="card-title">Key Quantitative Findings</div>
+              <div class="card-desc">Core data science conclusions established from the empirical dataset</div>
+            </div>
+            <div>
+              <button class="btn-primary" onclick="switchToTab('tab-tableau')">
+                ⚡ Open Tableau Dashboard
+              </button>
+            </div>
+          </div>
+
+          <div class="findings-grid">
+            <div class="finding-card">
+              <div class="finding-title">1. Extreme Market Concentration</div>
+              <div class="finding-text">
+                Bitcoin holds <strong>59.5%</strong> of market capitalization and the top 3 capture <strong>77.8%</strong>. The average daily Herfindahl-Hirschman Index is <strong>3,753</strong>, establishing an oligopoly structure.
+              </div>
+            </div>
+
+            <div class="finding-card">
+              <div class="finding-title">2. 55x Volatility Disparity</div>
+              <div class="finding-text">
+                Stablecoins average <strong>0.06%</strong> median daily movement versus <strong>3.33%</strong> for volatile tokens, proving algorithmic classification (CV &lt; 1%) cleanly isolates risk profiles.
+              </div>
+            </div>
+
+            <div class="finding-card">
+              <div class="finding-title">3. Weekend Volume Slump (-36.5%)</div>
+              <div class="finding-text">
+                Market volume drops from <strong>$189.3B on weekdays to $120.2B on weekends</strong>. Welch's t-test ($t = -5.03, p = 5.9 \times 10^{-6}$) proves the contraction is statistically significant.
+              </div>
+            </div>
+
+            <div class="finding-card">
+              <div class="finding-title">4. Fat-Tailed Returns (Kurtosis ~350)</div>
+              <div class="finding-text">
+                Daily returns exhibit excess kurtosis of ~350 with 3-sigma outliers occurring <strong>3.4x more often</strong> than Gaussian theory predicts, proving traditional VaR models underestimate crash risk.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           TAB 2: EXPLORE DATA
+           ================================================================ -->
+      <section id="tab-explore" class="tab-section">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">Explore Dataset</h1>
+          <p class="page-subtitle">
+            Inspect, filter, and export verified daily cryptocurrency panel records from the cleaned Kaggle dataset.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-header-clean">
+            <div>
+              <div class="card-title">Interactive Data Table</div>
+              <div class="card-desc">Showing end-of-day observations across 71 monitored cryptocurrency assets</div>
+            </div>
+            <div>
+              <a id="btn-download-csv" href="/api/export/daily-panel" class="btn-primary" download>
+                📥 Download Cleaned CSV
+              </a>
+            </div>
+          </div>
+
+          <!-- Filter Controls -->
+          <div class="controls-row">
+            <div class="control-group" style="flex: 1; min-width: 200px;">
+              <label class="control-label" for="explore-search-input">Search Coins:</label>
+              <input type="text" id="explore-search-input" class="form-input" placeholder="Type coin name or symbol (e.g. BTC, ETH)..." oninput="onExploreFilterChange()">
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="explore-asset-filter">Cryptocurrency:</label>
+              <select id="explore-asset-filter" class="form-select" onchange="onExploreFilterChange()">
+                <option value="ALL">All Cryptocurrencies</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="explore-type-filter">Token Classification:</label>
+              <select id="explore-type-filter" class="form-select" onchange="onExploreFilterChange()">
+                <option value="ALL">All Types</option>
+                <option value="Volatile">Volatile Tokens</option>
+                <option value="Stable-value">Stablecoins</option>
+              </select>
+            </div>
+
+            <div class="control-group">
+              <button class="btn-secondary" onclick="resetExploreFilters()" title="Reset all filters">Reset</button>
+            </div>
+          </div>
+
+          <!-- Clean Table -->
+          <div class="table-container">
+            <table class="clean-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Cryptocurrency</th>
+                  <th>Symbol</th>
+                  <th>Type</th>
+                  <th>Price (USD)</th>
+                  <th>24h Volume (USD)</th>
+                  <th>Market Cap (USD)</th>
+                  <th>24h Change (%)</th>
+                </tr>
+              </thead>
+              <tbody id="explore-table-body">
+                <tr>
+                  <td colspan="8" style="text-align:center; padding: 2.5rem; color: var(--text-muted);">
+                    <span class="spinner"></span> Loading records from backend...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Bar -->
+          <div class="pagination-bar">
+            <div id="explore-row-counter">Showing 0 records</div>
+            <div class="pagination-controls">
+              <button class="btn-secondary" id="btn-prev-page" onclick="changeExplorePage(-1)" disabled>Previous</button>
+              <span id="explore-page-indicator" style="font-weight:600; color:var(--text-primary); padding: 0 0.5rem;">Page 1</span>
+              <button class="btn-secondary" id="btn-next-page" onclick="changeExplorePage(1)" disabled>Next</button>
+              <select id="explore-page-size" class="form-select" style="padding: 0.35rem 0.6rem; font-size: 0.8rem;" onchange="onPageSizeChange(this.value)">
+                <option value="25">25 / page</option>
+                <option value="50" selected>50 / page</option>
+                <option value="100">100 / page</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           TAB 3: ANALYSIS
+           ================================================================ -->
+      <section id="tab-analysis" class="tab-section">
+        <!-- Page Header -->
+        <div class="page-header">
+          <h1 class="page-title">Data Science Analysis</h1>
+          <p class="page-subtitle">
+            All 15 faculty-required analytical questions and 7 statistical hypothesis tests computed with actual dataset values.
+          </p>
+        </div>
+
+        <!-- Category Filter Chips -->
+        <div class="analysis-filter-bar">
+          <button class="filter-chip active" onclick="filterAnalysisCategory('all', this)">All Questions (15)</button>
+          <button class="filter-chip" onclick="filterAnalysisCategory('concentration', this)">Market Structure (Q1–Q4)</button>
+          <button class="filter-chip" onclick="filterAnalysisCategory('volatility', this)">Risk & Volatility (Q5–Q9)</button>
+          <button class="filter-chip" onclick="filterAnalysisCategory('dynamics', this)">Market Dynamics (Q10–Q15)</button>
+        </div>
+
+        <!-- 15 Questions Render Container -->
+        <div id="analysis-questions-container">
+          <div class="card" style="text-align: center; padding: 3rem;">
+            <span class="spinner"></span>
+            <p style="margin-top: 1rem; color: var(--text-muted);">Loading 15 analytical questions from Python engine...</p>
+          </div>
+        </div>
+
+        <!-- Section 2: Hypothesis Testing -->
+        <div style="margin-top: 3.5rem; margin-bottom: 1.25rem;">
+          <h2 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary);">Statistical Hypothesis Testing (7 Tests)</h2>
+          <p style="color: var(--text-muted); font-size: 0.88rem; margin-top: 0.25rem;">
+            Formal statistical verification at significance level $\alpha = 0.05$ proving that observed relationships are not random noise.
+          </p>
+        </div>
+
+        <div id="hypothesis-cards-container" class="hypothesis-cards-grid">
+          <div class="card" style="text-align: center; padding: 2rem;">
+            <span class="spinner"></span> Loading statistical hypothesis tests...
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================================
+           TAB 4: TABLEAU DASHBOARD
+           ================================================================ -->
+      <section id="tab-tableau" class="tab-section">
+        <!-- Page Header -->
+        <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+          <div>
+            <h1 class="page-title">Tableau Executive Dashboard</h1>
+            <p class="page-subtitle">
+              Live interactive multi-dimensional dashboard published on Tableau Public.
+            </p>
+          </div>
+          <div style="display: flex; gap: 0.75rem;">
+            <a href="https://public.tableau.com/views/fods_dashboard/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" 
+               target="_blank" 
+               rel="noopener noreferrer" 
+               class="btn-outline">
+              Open in Tableau ↗
+            </a>
+            <button class="btn-secondary" onclick="reloadTableauEmbed()">
+              Reload Viz
+            </button>
+          </div>
+        </div>
+
+        <!-- Embedded Tableau Dashboard Container -->
+        <div class="tableau-embed-card">
+          <div class="tableau-wrapper" id="tableau-wrapper">
+            <iframe 
+              id="tableau-iframe"
+              class="tableau-iframe"
+              src="https://public.tableau.com/views/fods_dashboard/Dashboard1?:showVizHome=no&:embed=true&:language=en-US&:display_count=n&:origin=viz_share_link" 
+              allowfullscreen>
+            </iframe>
+
+            <!-- Fallback if iframe fails to load or adblocker interferes -->
+            <div id="tableau-fallback" class="tableau-fallback">
+              <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.5rem;">Tableau Visualization Preview</h3>
+              <p style="font-size: 0.9rem; color: var(--text-secondary); max-width: 600px; margin: 0 auto 1.5rem;">
+                If the embedded Tableau Public visualization is blocked by browser tracking protection or an adblocker, you can open the dashboard directly in Tableau Public.
+              </p>
+              <a href="https://public.tableau.com/views/fods_dashboard/Dashboard1?:language=en-US&:sid=&:redirect=auth&:display_count=n&:origin=viz_share_link" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="btn-primary">
+                Open Dashboard Directly in Tableau Public ↗
+              </a>
+            </div>
+          </div>
+
+          <!-- Academic Note -->
+          <div class="finding-card" style="margin-top: 1.25rem;">
+            <strong>Integration Note:</strong> This workbook is hosted on Tableau Public and visualizes the structured panel datasets exported from this project's analysis engine (`tableau_crypto_daily_panel.csv` and `tableau_crypto_summary_by_asset.csv`). Tableau Public connects to pre-exported datasets and is evaluated separately from the local Python Flask analytics server.
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Clean Academic Footer -->
+    <footer class="app-footer">
+      <div style="max-width: 1200px; margin: 0 auto;">
+        <p><strong>Course: 23CSE351 – Foundations of Data Science</strong> • Cryptocurrency Market Behaviour Case Study</p>
+        <p style="margin-top: 0.35rem; color: #94a3b8;">CryptoScope Analytics Suite • Python Flask Backend • Scikit-Learn / Statsmodels Engine • Tableau Public Integration</p>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="js/app.js"></script>
+</body>
+</html>
